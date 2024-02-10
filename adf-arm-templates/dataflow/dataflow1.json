@@ -1,0 +1,101 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "CSV_Input_Stream2",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSV_output_stream",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     parameter1 as string (\"Default\")",
+				"}",
+				"source(output(",
+				"          Series_reference as string,",
+				"          Period as date 'yyyy.MM',",
+				"          Data_value as integer,",
+				"          Suppressed as string,",
+				"          STATUS as string,",
+				"          UNITS as string,",
+				"          Magnitude as integer,",
+				"          Subject as string,",
+				"          Group as string,",
+				"          Series_title_1 as string,",
+				"          Series_title_2 as string,",
+				"          Series_title_3 as string,",
+				"          Series_title_4 as string,",
+				"          Series_title_5 as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     limit: 10,",
+				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:['raw/*.csv']) ~> source1",
+				"source1 select(mapColumn(",
+				"          series_reference = Series_reference,",
+				"          period = Period,",
+				"          data_value = Data_value,",
+				"          suppressed = Suppressed,",
+				"          status = STATUS,",
+				"          units = UNITS,",
+				"          magnitude = Magnitude,",
+				"          subject = Subject,",
+				"          group = Group,",
+				"          series_title_1 = Series_title_1,",
+				"          series_title_2 = Series_title_2,",
+				"          series_title_3 = Series_title_3",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(file_name = $parameter1) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[($parameter1)],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          series_reference,",
+				"          period,",
+				"          data_value,",
+				"          suppressed,",
+				"          status,",
+				"          units,",
+				"          magnitude,",
+				"          subject,",
+				"          group,",
+				"          series_title_1,",
+				"          series_title_2,",
+				"          series_title_3,",
+				"          filename = file_name",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

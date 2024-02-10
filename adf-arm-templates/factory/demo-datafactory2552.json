@@ -1,0 +1,9 @@
+{
+	"name": "demo-datafactory2552",
+	"location": "southindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "52546ee4-8b99-4a9a-87bf-817de2f0e7ac",
+		"tenantId": "2832dc2f-0220-419f-acd7-024a403d0bca"
+	}
+}
